@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>講座のサブスク適性判定テスト</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            background-color: #f4f7f9;
+            color: #2c3e50;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #ffffff;
+            max-width: 500px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            text-align: center;
+            box-sizing: border-box;
+        }
+        h1 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .progress-bar {
+            background: #e0e0e0;
+            border-radius: 10px;
+            height: 8px;
+            width: 100%;
+            margin-bottom: 25px;
+            overflow: hidden;
+        }
+        .progress {
+            background: #00a2e8;
+            height: 100%;
+            width: 16.6%;
+            transition: width 0.3s ease;
+        }
+        .question-text {
+            font-size: 17px;
+            font-weight: bold;
+            line-height: 1.6;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border: 2px solid #00a2e8;
+            border-radius: 8px;
+            background: #ffffff;
+            color: #00a2e8;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn:hover {
+            background: #f0f8ff;
+        }
+        .btn-action {
+            background: #00a2e8;
+            color: #ffffff;
+            border: none;
+            padding: 15px 30px;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .result-title {
+            font-size: 22px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+        .result-desc {
+            font-size: 15px;
+            line-height: 1.8;
+            text-align: left;
+            background: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- クイズ画面 -->
+    <div id="quiz-screen">
+        <h1 id="step-title">質問 1 / 6</h1>
+        <div class="progress-bar">
+            <div id="progress" class="progress"></div>
+        </div>
+        <div id="question" class="question-text">受講生があなたの講座を学ぶ最大の目的は、「売上アップ」「転職」「資格取得」など明確な成果ですか？</div>
+        <button class="btn" onclick="answer(1)">はい、当てはまる</button>
+        <button class="btn" onclick="answer(0)">いいえ、当てはまらない</button>
+    </div>
+
+    <!-- 結果画面（初期は非表示） -->
+    <div id="result-screen" style="display: none;">
+        <div id="result-title" class="result-title">診断中...</div>
+        <div id="result-desc" class="result-desc"></div>
+        <p style="font-size: 14px; font-weight: bold; color: #2c3e50;">
+            ⚠️ あなたの講座に合わせた「具体的なサブスク化のステップ」や、AIトレンドを絡めた個別の裏技は、公式LINEで直接解説しています👇
+        </p>
+        <a href="https://lin.ee" class="btn-action">『詳細をLINEで聞いてみる』</a>
+    </div>
+</div>
+
+<script>
+    // 質問データの定義（前半3問がAグループ、後半3問がBグループ）
+    const questions = [
+        { text: "受講生があなたの講座を学ぶ目的は、「売上UP・転職・資格取得」など明確な成果ですか？", type: "A" },
+        { text: "ノウハウをすべて教えきったら、カリキュラムは基本的に「終了（卒業）」となりますか？", type: "A" },
+        { text: "時代や技術の変化によって、教える内容が1〜2年で古くなる（常に最新情報を追う必要がある）内容ですか？", type: "A" },
+        { text: "受講生が学ぶ目的は、ノウハウよりも「生き方・在り方・人間力を磨くこと」ですか？", type: "B" },
+        { text: "カリキュラムに明確な「終わり」がなく、本質的には一生学び続けられるテーマですか？", type: "B" },
+        { text: "受講生はノウハウの習得だけでなく、「同じ価値観の仲間とのつながり（居場所）」も求めていますか？", type: "B" }
+    ];
+
+    let currentIdx = 0;
+    let scoreA = 0;
+    let scoreB = 0;
+
+    function answer(points) {
+        // ポイントの集計
+        if (points === 1) {
+            if (questions[currentIdx].type === "A") scoreA++;
+            if (questions[currentIdx].type === "B") scoreB++;
+        }
+
+        currentIdx++;
+
+        if (currentIdx < questions.length) {
+            // 次の質問を表示
+            document.getElementById("step-title").innerText = "質問 " + (currentIdx + 1) + " / " + questions.length;
+            document.getElementById("question").innerText = questions[currentIdx].text;
+            document.getElementById("progress").style.width = ((currentIdx + 1) / questions.length * 100) + "%";
+        } else {
+            // すべて回答したら結果画面へ
+            showResult();
+        }
+    }
+
+    function showResult() {
+        document.getElementById("quiz-screen").style.display = "none";
+        document.getElementById("result-screen").style.display = "block";
+
+        const titleEl = document.getElementById("result-title");
+        const descEl = document.getElementById("result-desc");
+
+        if (scoreA > scoreB) {
+            titleEl.innerText = "📋 【スキル・ノウハウ型】";
+            titleEl.style.color = "#c0392b";
+            descEl.innerHTML = "通常のサブスク（月謝制）はやや不向きな傾向があります。成果が出たり、逆に諦めたりするとすぐに解約されやすいからです。<br><br><b>💡ただし、裏技があります！</b><br>AI活用などのように「トレンドが凄まじいスピードで進化し続ける分野」であれば、スキル系であっても強力なサブスクモデルを成立させる設計が可能です。";
+        } else if (scoreB > scoreA) {
+            titleEl.innerText = "📋 【思想・在り方型】";
+            titleEl.style.color = "#27ae60";
+            descEl.innerHTML = "最も「4〜5年続く超長期サブスクモデル」に向いているジャンルです！<br><br>学ぶ目的に明確なゴールがないため、コミュニティ化（居場所化）を掛け合わせることで、毎月の解約を劇的に防ぐことができます。最終的には、受講生を講師や紹介パートナーに引き上げることで、広告費をかけずに回り続ける無限の集客モデルが完成します。";
+        } else {
+            titleEl.innerText = "📋 【ハイブリッド型】";
+            titleEl.style.color = "#2c3e50";
+            descEl.innerHTML = "スキル面とマインド面の両方の要素をバランスよく持っている講座です。<br><br>このタイプは、フロントとバックエンドで役割を切り分けを行うことで、高額講座と長期サブスクの「良いとこ取り」をした、非常に強いビジネスモデルを構築できる可能性があります。";
+        }
+    }
+</script>
+
+</body>
+</html>
